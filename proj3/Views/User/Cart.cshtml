@@ -1,0 +1,100 @@
+@model List<poj3.Models.CartItem>
+@{
+    Layout = "~/Views/Shared/_layouthome.cshtml";
+    ViewData["Title"] = "Shopping Cart";
+    var subtotal = Model.Sum(x => x.Total);
+}
+<div class="container py-7">
+    <h1 class="font-size-30 font-weight-bold mb-5">Shopping Cart</h1>
+
+    @if (TempData["CartMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["CartMessage"]</div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="text-center py-8 border rounded-lg">
+            <h3>Your cart is empty.</h3>
+            <a asp-action="home" class="btn btn-primary mt-3">Continue Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered bg-white align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Product" asp-route-id="@item.ProductId" class="d-flex align-items-center text-blue">
+                                <img src="@Url.Content(item.Image)" style="width:75px;height:75px;object-fit:contain" class="mr-3" />
+                                <span>@item.Name</span>
+                            </a>
+                        </td>
+                        <td>$@item.Price.ToString("N2")</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <form asp-action="DecreaseQuantity" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary px-3">−</button>
+                                </form>
+
+                                <span class="mx-3 font-weight-bold" style="min-width:20px;text-align:center">
+                                    @item.Quantity
+                                </span>
+
+                                <form asp-action="IncreaseQuantity" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.ProductId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary px-3">+</button>
+                                </form>
+                            </div>
+
+                            <form asp-action="UpdateCart" method="post" class="d-flex mt-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.ProductId" />
+                                <input type="number" name="quantity" min="1" value="@item.Quantity"
+                                       class="form-control form-control-sm" style="width:80px" />
+                                <button class="btn btn-sm btn-primary ml-2" type="submit">Update</button>
+                            </form>
+                        </td>
+                        <td class="font-weight-bold">$@item.Total.ToString("N2")</td>
+                        <td>
+                            <form asp-action="RemoveFromCart" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.ProductId" />
+                                <button class="btn btn-sm btn-danger" type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <div class="border p-4">
+                    <h4>Cart Total</h4>
+                    <div class="d-flex justify-content-between font-weight-bold mb-3">
+                        <span>Total</span>
+                        <span>$@subtotal.ToString("N2")</span>
+                    </div>
+                    <a asp-action="Checkout" class="btn btn-primary btn-block">Proceed to Buy</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

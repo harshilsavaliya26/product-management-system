@@ -1,0 +1,75 @@
+@model AdminLTE.Models.RegisterModel
+@{
+    Layout = "~/Views/Shared/_layouthome.cshtml";
+    ViewData["Title"] = "Manage Account";
+}
+
+<div class="container py-7">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="bg-white border rounded-lg p-5">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <h1 class="font-size-30 font-weight-bold mb-1">Manage Account</h1>
+                        <p class="text-muted mb-0">Update the details used when you registered.</p>+
+                    </div>
+                    <i class="ec ec-user font-size-40 text-primary"></i>
+                </div>
+
+                @if (TempData["AccountMessage"] != null)
+                {
+                    <div class="alert alert-success">@TempData["AccountMessage"]</div>
+                }
+
+                @if (ViewBag.msg != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.msg</div>
+                }
+
+                <form asp-action="ManageAccount" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="form-group">
+                        <label asp-for="name">Name</label>
+                        <input asp-for="name" class="form-control" placeholder="Enter your name" />
+                        <span asp-validation-for="name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="email">Email</label>
+                        <input asp-for="email" type="email" class="form-control" placeholder="Enter your email" />
+                        <span asp-validation-for="email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="password">Password</label>
+                        <input asp-for="password" type="text" class="form-control" placeholder="Enter your password" />
+                        <span asp-validation-for="password" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex flex-wrap mt-4">
+                        <button type="submit" class="btn btn-primary mr-2 mb-2">
+                            <i class="ec ec-check mr-1"></i> Update Account
+                        </button>
+                        <a asp-action="home" class="btn btn-outline-secondary mb-2">Back to Store</a>
+                    </div>
+                </form>
+
+                <hr class="my-5" />
+
+                <div class="border border-danger rounded p-4">
+                    <h5 class="text-danger">Delete Account</h5>
+                    <p class="text-muted mb-3">This permanently deletes your registered account.</p>
+                    <form asp-action="DeleteAccount" method="post" onsubmit="return confirm('Are you sure you want to delete your account?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            <i class="ec ec-trash mr-1"></i> Delete My Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

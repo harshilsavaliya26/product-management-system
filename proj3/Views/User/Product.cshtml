@@ -1,0 +1,53 @@
+@model poj3.Models.Product
+@{
+    Layout = "~/Views/Shared/_layouthome.cshtml";
+    ViewData["Title"] = Model.Name;
+    bool isFavorite = ViewBag.IsFavorite == true;
+}
+<div class="container py-7">
+    <div class="mb-4"><a asp-action="home" class="text-blue">← Back to Store</a></div>
+
+    @if (TempData["FavoriteMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["FavoriteMessage"]</div>
+    }
+
+    <div class="row bg-white p-4 border rounded-lg">
+        <div class="col-lg-6 text-center">
+            <img src="@Url.Content(Model.Image)" class="img-fluid" style="max-height:520px;object-fit:contain" alt="@Model.Name" />
+        </div>
+
+        <div class="col-lg-6 pt-4">
+            <span class="text-gray-5">@Model.Category</span>
+            <h1 class="font-size-30 font-weight-bold text-blue mt-2">@Model.Name</h1>
+            <div class="font-size-28 font-weight-bold mt-4">$@Model.Price.ToString("N2")</div>
+            <p class="mt-4 text-gray-6">@Model.Description</p>
+            <p><strong>Availability:</strong> <span class="text-green">In Stock (@Model.Stock)</span></p>
+
+            <form asp-action="AddToCart" method="post" class="mt-4 d-flex align-items-center flex-wrap">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="number" name="quantity" value="1" min="1" max="@Model.Stock"
+                       class="form-control mr-3 mb-2" style="width:90px" />
+                <button type="submit" class="btn btn-primary px-5 mb-2">Add to Cart</button>
+            </form>
+
+            <div class="d-flex flex-wrap">
+                <a asp-action="BuyNow" asp-route-id="@Model.Id" class="btn btn-dark mt-2 mr-2 px-5">Buy Now</a>
+
+                <form asp-action="ToggleFavorite" method="post" class="mt-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn @(isFavorite ? "btn-danger" : "btn-outline-danger") px-4">
+                        <i class="ec ec-favorites mr-1"></i>
+                        @(isFavorite ? "Remove Favorite" : "Add to Favorites")
+                    </button>
+                </form>
+            </div>
+
+            <div class="mt-4">
+                <a asp-action="Favorites" class="text-primary">View My Favorites</a>
+            </div>
+        </div>
+    </div>
+</div>
